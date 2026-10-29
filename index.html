@@ -423,7 +423,7 @@
         <!-- BANNER DE INICIO -->
         <div class="banner-info" id="homeBanner">
             <i class="fa-solid fa-cloud-check"></i>
-            <p>Sistema sincronizado con <strong>Microsoft Lists</strong> con alertas de revisión mensual (ciclo de 1 mes + 3 días de gracia).</p>
+            <p>Sistema sincronizado con <strong>Microsoft Lists</strong> con alerta previa de revisión mensual (3 días antes del mes / día 27).</p>
         </div>
 
         <!-- GRID DE NAVEGACIÓN PRINCIPAL -->
@@ -622,7 +622,7 @@
                 <div id="listDevueltas"></div>
 
                 <div class="list-header bg-pendientes" style="margin-top: 15px;">
-                    <i class="fa-solid fa-clock"></i> Pendientes de Revisión Mensual (Alerta a los 33 días)
+                    <i class="fa-solid fa-clock"></i> Pendientes de Revisión Mensual (Alerta a los 27 días / Faltando 3 días para el mes)
                 </div>
                 <div id="listPendientesRev"></div>
             </div>
@@ -739,7 +739,6 @@
             document.querySelectorAll(".screen-section").forEach(s => s.classList.remove("active"));
         }
 
-        // FUNCIÓN PARA RESINCRONIZAR Y LIMPIAR LA MEMORIA LOCAL TRAS BORRAR REGISTROS
         function sincronizarOVaciarMemoria() {
             if (confirm("¿Deseas resincronizar la memoria de la app web con el estado actual de Microsoft Lists? esto reiniciará la caché local.")) {
                 localStorage.removeItem('estadoLinternasUIO_RevisionCiclo');
@@ -822,6 +821,7 @@
             }
         }
 
+        // ACTUALIZACIÓN DEL DASHBOARD CON ALERTA A LOS 27 DÍAS (3 DÍAS ANTES DE LOS 30 DÍAS)
         function actualizarDashboard() {
             let total = trabajadoresOficiales.length;
             let entregadasCount = 0;
@@ -834,7 +834,8 @@
 
             const ahora = new Date().getTime();
             const unDiaEnMs = 1000 * 60 * 60 * 24;
-            const diasLimiteAlerta = 33; 
+            // Alerta a los 27 días (Faltando 3 días para cumplir el mes de 30 días)
+            const diasAlertaPrevia = 27; 
 
             trabajadoresOficiales.forEach(t => {
                 const info = estadoLinternas[t.serie] || { estado: 'DEVUELTA', ultimaRevisionTime: null };
@@ -865,10 +866,13 @@
                     `;
                 }
 
+                // REGLA: ALERTA FALTANDO 3 DÍAS PARA CUMPLIR EL MES (DÍA 27 EN ADELANTE O SI NUNCA SE REVISÓ)
                 let necesitaRevision = false;
-                if (info.ultimaRevisionTime) {
+                if (!info.ultimaRevisionTime) {
+                    necesitaRevision = true; 
+                } else {
                     const diasTranscurridos = Math.floor((ahora - info.ultimaRevisionTime) / unDiaEnMs);
-                    if (diasTranscurridos >= diasLimiteAlerta) {
+                    if (diasTranscurridos >= diasAlertaPrevia) {
                         necesitaRevision = true;
                     }
                 }
@@ -879,7 +883,7 @@
                         <div class="item-card">
                             <div class="item-info">
                                 <h4>${t.nombre}</h4>
-                                <p>Serie: ${t.serie} | <strong>¡Alerta cumplimiento mensual + 3 días vencidos!</strong></p>
+                                <p>Serie: ${t.serie} | <strong>¡Alerta: Faltan 3 días o menos para cumplir el mes de revisión!</strong></p>
                             </div>
                             <span style="font-size: 11px; font-weight:700; color: var(--status-orange);">PENDIENTE</span>
                         </div>
@@ -894,7 +898,7 @@
 
             document.getElementById("listEntregadas").innerHTML = htmlEntregadas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos entregados activos.</p>';
             document.getElementById("listDevueltas").innerHTML = htmlDevueltas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos devueltos registrados.</p>';
-            document.getElementById("listPendientesRev").innerHTML = htmlPendientes || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">¡Excelente! Ningún equipo ha superado los 30 días + 3 días de gracia.</p>';
+            document.getElementById("listPendientesRev").innerHTML = htmlPendientes || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">¡Excelente! Ningún equipo está a 3 días o menos de cumplir el mes.</p>';
         }
 
         function verificarConexion() {
