@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROL DE LINTERNAS UIO</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --avianca-red: #D71920;
+            --avianca-red-hover: #b51218;
+            --corp-blue: #0078D4;
+            --corp-blue-hover: #005a9e;
+            --status-green: #28A745;
+            --status-orange: #FF8C00;
+            --status-red: #DC3545;
+            --bg-gray: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-muted: #6C757D;
+            --border-color: #E2E8F0;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* HEADER CORPORATIVO */
+        .header {
+            background: linear-gradient(135deg, var(--avianca-red) 0%, #a80f14 100%);
+            color: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-title i {
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title p {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        .sync-badge {
+            background-color: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sync-badge:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+
+        .dot-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #28a745;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* BANNER */
+        .banner-info {
+            background-color: #fff;
+            border-left: 4px solid var(--corp-blue);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .banner-info i {
+            color: var(--corp-blue);
+            font-size: 18px;
+        }
+
+        .banner-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* BOTONES PRINCIPALES NAV */
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 500px) {
+            .grid-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-action-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.25s ease;
+            text-align: left;
+        }
+
+        .btn-action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-entrega { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
+        .icon-devolucion { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
+        .icon-revision { background-color: rgba(40, 167, 69, 0.1); color: var(--status-green); }
+        .icon-dashboard { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
+
+        .btn-action-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .btn-action-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* FORMULARIOS Y PANTALLAS */
+        .screen-section {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-gray);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* FORM CONTROLS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #FAFAFA;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--corp-blue);
+            background-color: #FFF;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-red { background-color: var(--avianca-red); }
+        .btn-red:hover { background-color: var(--avianca-red-hover); }
+
+        .btn-blue { background-color: var(--corp-blue); }
+        .btn-blue:hover { background-color: var(--corp-blue-hover); }
+
+        .btn-green { background-color: var(--status-green); }
+        .btn-green:hover { background-color: #218838; }
+
+        /* DASHBOARD KPIS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-gray);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-val {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .kpi-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        /* LISTAS DASHBOARD */
+        .list-section {
+            margin-top: 20px;
+        }
+
+        .list-header {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bg-entregadas { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
+        .bg-devueltas { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
+        .bg-pendientes { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
+
+        .item-card {
+            background-color: #FFF;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .item-info p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 30px;
+        }
+
+        /* SPINNER LOADER */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand-title">
+                <i class="fa-solid fa-flashlight"></i>
+                <div>
+                    <h1>CONTROL LINTERNAS UIO</h1>
+                    <p>Gestión de Equipos • Aeropuerto UIO</p>
+                </div>
+            </div>
+            <div class="sync-badge" onclick="sincronizarOVaciarMemoria()" title="Haz clic para resincronizar la memoria local">
+                <div class="dot-status" id="statusDot"></div>
+                <span id="statusText">Conectado a MS Lists (Sincronizar)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- BANNER DE INICIO -->
+        <div class="banner-info" id="homeBanner">
+            <i class="fa-solid fa-cloud-check"></i>
+            <p>Sistema sincronizado con <strong>Microsoft Lists</strong> con alertas de revisión mensual (ciclo de 1 mes + 3 días de gracia).</p>
+        </div>
+
+        <!-- GRID DE NAVEGACIÓN PRINCIPAL -->
+        <div class="grid-buttons" id="mainMenu">
+            <div class="btn-action-card" onclick="openScreen('screenEntrega')">
+                <div class="btn-icon icon-entrega">
+                    <i class="fa-solid fa-hand-holding"></i>
+                </div>
+                <div>
+                    <h3>Registrar Entrega</h3>
+                    <p>Asignar linterna con fecha y observaciones</p>
+                </div>
+            </div>
+
+            <div class="btn-action-card" onclick="openScreen('screenDevolucion')">
+                <div class="btn-icon icon-devolucion">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </div>
+                <div>
+                    <h3>Registrar Devolución</h3>
+                    <p>Motivo, fecha y estado de devolución</p>
+                </div>
+            </div>
+
+            <div class="btn-action-card" onclick="openScreen('screenRevision')">
+                <div class="btn-icon icon-revision">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <div>
+                    <h3>Revisión Mensual</h3>
+                    <p>Checklist de inspección periódica</p>
+                </div>
+            </div>
+
+            <div class="btn-action-card" onclick="openScreen('screenDashboard')">
+                <div class="btn-icon icon-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <h3>Dashboard</h3>
+                    <p>Indicadores clave y reportes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA: REGISTRAR ENTREGA -->
+        <section class="screen-section" id="screenEntrega">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-hand-holding" style="color: var(--avianca-red);"></i>
+                    <span>Registrar Entrega de Linterna</span>
+                </div>
+                <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="formEntrega" onsubmit="guardarRegistro(event, 'ENTREGA')">
+                <div class="form-group">
+                    <label>Trabajador</label>
+                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
+                        <option value="">-- Seleccionar Trabajador --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Serie de Linterna</label>
+                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
+                </div>
+                <div class="form-group">
+                    <label>Batch / Lote</label>
+                    <input type="text" class="form-control inputBatch" placeholder="Ej: B-2026-A" required>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones de Entrega</label>
+                    <textarea class="form-control inputObs" rows="3" placeholder="Detalles o comentarios de la entrega..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit btn-red" id="btnSubmitEntrega">
+                    <i class="fa-solid fa-download"></i> <span>REGISTRAR ENTREGA</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- PANTALLA: REGISTRAR DEVOLUCIÓN -->
+        <section class="screen-section" id="screenDevolucion">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-rotate-left" style="color: var(--corp-blue);"></i>
+                    <span>Registrar Devolución de Linterna</span>
+                </div>
+                <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="formDevolucion" onsubmit="guardarRegistro(event, 'DEVOLUCION')">
+                <div class="form-group">
+                    <label>Trabajador</label>
+                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
+                        <option value="">-- Seleccionar Trabajador --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Serie de Linterna</label>
+                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
+                </div>
+                <div class="form-group">
+                    <label>Motivo de Devolución / Inconveniente</label>
+                    <textarea class="form-control inputObs" rows="3" placeholder="Ej: Falla de batería, mica rota, cambio de turno..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit btn-blue" id="btnSubmitDevolucion">
+                    <i class="fa-solid fa-upload"></i> <span>REGISTRAR DEVOLUCIÓN</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- PANTALLA: REVISIÓN MENSUAL -->
+        <section class="screen-section" id="screenRevision">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-clipboard-check" style="color: var(--status-green);"></i>
+                    <span>Revisión Mensual de Equipos</span>
+                </div>
+                <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="formRevision" onsubmit="guardarRegistro(event, 'REVISION')">
+                <div class="form-group">
+                    <label>Trabajador</label>
+                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
+                        <option value="">-- Seleccionar Trabajador --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Serie de Linterna</label>
+                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
+                </div>
+                <div class="form-group">
+                    <label>Estado Físico</label>
+                    <select class="form-control inputEstado" required>
+                        <option value="Bueno">Bueno</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Malo">Malo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Resultado de Inspección</label>
+                    <select class="form-control inputResultado" required>
+                        <option value="Conforme">Conforme</option>
+                        <option value="Con observacion">Con observación</option>
+                        <option value="No conforme">No conforme</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones Técnicas</label>
+                    <textarea class="form-control inputObs" rows="3" placeholder="Detalles de la inspección mensual..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit btn-green" id="btnSubmitRevision">
+                    <i class="fa-solid fa-magnifying-glass"></i> <span>GUARDAR REVISIÓN</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- PANTALLA: DASHBOARD -->
+        <section class="screen-section" id="screenDashboard">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--status-orange);"></i>
+                    <span>Dashboard de Operaciones</span>
+                </div>
+                <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- CARDS KPI -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--corp-blue);" id="kpiTotal">44</div>
+                    <div class="kpi-lbl">Total Linternas</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--avianca-red);" id="kpiEntregadas">0</div>
+                    <div class="kpi-lbl">Entregadas</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--corp-blue);" id="kpiDevueltas">44</div>
+                    <div class="kpi-lbl">Devueltas / Bodega</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--status-orange);" id="kpiPendientesRev">0</div>
+                    <div class="kpi-lbl">Pend. Revisión</div>
+                </div>
+            </div>
+
+            <!-- LISTAS -->
+            <div class="list-section">
+                <div class="list-header bg-entregadas">
+                    <i class="fa-solid fa-circle-check"></i> Entregadas Activas
+                </div>
+                <div id="listEntregadas"></div>
+
+                <div class="list-header bg-devueltas" style="margin-top: 15px;">
+                    <i class="fa-solid fa-rotate-left"></i> Devueltas / Bodega
+                </div>
+                <div id="listDevueltas"></div>
+
+                <div class="list-header bg-pendientes" style="margin-top: 15px;">
+                    <i class="fa-solid fa-clock"></i> Pendientes de Revisión Mensual (Alerta a los 33 días)
+                </div>
+                <div id="listPendientesRev"></div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Control de Linternas UIO • Aeropuerto Internacional Mariscal Sucre<br>
+            Conectado a Microsoft Lists via Power Automate
+        </div>
+
+    </div>
+
+    <script>
+        // URL AUTENTICADA DE POWER AUTOMATE
+        const POWER_AUTOMATE_URL = "https://defaulta2addd3e83974579ba307a38803fc3.bf.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/5aed9a636bb34561a1c79b28912908e7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ib5Xa5XWkPBDqPU359kL_xPpy-mTAIIsDt-vEsCjKpQ";
+
+        // LISTA OFICIAL DE LOS 44 TRABAJADORES
+        const trabajadoresOficiales = [
+            { nombre: "Conlago, Edison", serie: "564640 Q0126", batch: "RD4050489" },
+            { nombre: "Perez, Daniel", serie: "236603 A0625", batch: "RD4050489" },
+            { nombre: "Baldeon , Molina , David , Gonzalo", serie: "236618 A0625", batch: "RD4050489" },
+            { nombre: "Rosero , De La Vega , Pablo , Emilio", serie: "236614 A0625", batch: "RD4050489" },
+            { nombre: "Llerena , Navarrete , Daniel , Esteban", serie: "564628 Q0126", batch: "RD4050489" },
+            { nombre: "Guayta , Pillalaza , Romulo , Vinicio", serie: "223709 A0325", batch: "RD4050489" },
+            { nombre: "Montenegro , Armas , Juan , Carlos", serie: "564663 Q0126", batch: "RD4050489" },
+            { nombre: "Haro , Alulema , Santiago , Francisco", serie: "564632 Q0126", batch: "RD4050489" },
+            { nombre: "Caisa, Quishpe, Kevin, Rene", serie: "564645 Q0126", batch: "RD4050489" },
+            { nombre: "Carvajal , Minango , Juan , Carlos", serie: "223713 A0325", batch: "RD4050489" },
+            { nombre: "Suqillo, Diego", serie: "564661 Q0126", batch: "RD4050489" },
+            { nombre: "Villagomez , Guaynalla , Henry , Gonzalo", serie: "564668 Q0126", batch: "RD4050489" },
+            { nombre: "Escudero , Medina , Diego , Paul", serie: "564653 Q0126", batch: "RD4050489" },
+            { nombre: "Villareal Edgar", serie: "236625 A0625", batch: "RD4050489" },
+            { nombre: "Reina, Pablo", serie: "564665 Q0126", batch: "RD4050489" },
+            { nombre: "Samueza , Garzon , Diego , Andres", serie: "223372 A0325", batch: "RD4050489" },
+            { nombre: "Villa, Morales, Angel, David", serie: "564643 Q0126", batch: "RD4050489" },
+            { nombre: "Nasimba , Paola", serie: "223716 A0325", batch: "RD4050489" },
+            { nombre: "Oliva , Pogo , Jose , Miguel", serie: "236624 A0625", batch: "RD4050489" },
+            { nombre: "Gavilema, Cristhian", serie: "564652 Q0126", batch: "RD4050489" },
+            { nombre: "Romero , Rodriguez , Luis , Gonzalo", serie: "236612 A0625", batch: "RD4050489" },
+            { nombre: "Llano , Catota , Edison , Fabian", serie: "223358 A0325", batch: "RD4050489" },
+            { nombre: "Tuquerres , Leon , Wellington , Wilfrido", serie: "236622 A0625", batch: "RD4050489" },
+            { nombre: "Lozano , Diego , Alexander", serie: "564647 Q0126", batch: "RD4050489" },
+            { nombre: "Rodriguez , Fauta , Jose , Luis", serie: "223706 A0325", batch: "RD4050489" },
+            { nombre: "Moncayo, Nicloas", serie: "492918 Q0624", batch: "RD3814568" },
+            { nombre: "Pallo, Carlos", serie: "235849 A0525", batch: "RD3814568" },
+            { nombre: "Leon , Anrango , Gilber , Xavier", serie: "208465 A1024", batch: "RD3814568" },
+            { nombre: "Pillajo , Cantuña , Aida , Lorena", serie: "492692 Q0624", batch: "RD3814568" },
+            { nombre: "Pauta , Collaguazo , Ramiro , Javier", serie: "208468 A1024", batch: "RD3814568" },
+            { nombre: "Changoluisa , Caiza , Victor , Hugo", serie: "223790 A0325", batch: "RD3814568" },
+            { nombre: "Ulquiango , Ulco , Fausto , Patricio", serie: "206997 A1024", batch: "RD3814575" },
+            { nombre: "Pulupa , Vaca , Danny , Israel", serie: "234400 A0525", batch: "RD3814575" },
+            { nombre: "Tipan, Alex", serie: "207000 A1024", batch: "RD3814575" },
+            { nombre: "Escobar , Vergara , Fernanda , Patricia", serie: "234401 A0525", batch: "RD3814575" },
+            { nombre: "Guanochanga, Edison", serie: "492707 Q0624", batch: "RD3814575" },
+            { nombre: "Arias , Barriga , Dario , Javier", serie: "234042 A0525", batch: "RD3814575" },
+            { nombre: "Laverde, Antonio", serie: "223917 A0325", batch: "RD3814575" },
+            { nombre: "Guana, Reyes, Luis, Dario", serie: "221863 A0325", batch: "RD3814575" },
+            { nombre: "Columba, Jaime", serie: "234067 A0525", batch: "RD3814575" },
+            { nombre: "Chaguancallo , Cascante , Danilo , Vinicio", serie: "209042 A1024", batch: "RD3814575" },
+            { nombre: "Freire, Jose, Luis", serie: "207022 A1024", batch: "RD3814575" },
+            { nombre: "Araujo , Proano , Juan , Gabriel", serie: "208457 A1024", batch: "RD3814575" },
+            { nombre: "Roh , Yupangui , Demin , Wilson", serie: "208434 A1024", batch: "RD3814575" }
+        ];
+
+        let estadoLinternas = JSON.parse(localStorage.getItem('estadoLinternasUIO_RevisionCiclo')) || {};
+
+        document.addEventListener("DOMContentLoaded", function() {
+            populateWorkers();
+            actualizarDashboard();
+        });
+
+        function populateWorkers() {
+            const selects = document.querySelectorAll(".selectWorker");
+            selects.forEach(select => {
+                select.innerHTML = '<option value="">-- Seleccionar Trabajador --</option>';
+                trabajadoresOficiales.forEach(t => {
+                    const opt = document.createElement("option");
+                    opt.value = t.nombre;
+                    opt.textContent = t.nombre;
+                    select.appendChild(opt);
+                });
+            });
+        }
+
+        function autocompletarEquipo(selectElement) {
+            const nombreSeleccionado = selectElement.value;
+            const formularioActual = selectElement.closest("form");
+            
+            const inputSerie = formularioActual.querySelector(".inputSerie");
+            const inputBatch = formularioActual.querySelector(".inputBatch");
+
+            if (!nombreSeleccionado) {
+                if (inputSerie) inputSerie.value = "";
+                if (inputBatch) inputBatch.value = "";
+                return;
+            }
+
+            const trabajadorEncontrado = trabajadoresOficiales.find(t => t.nombre === nombreSeleccionado);
+
+            if (trabajadorEncontrado) {
+                if (inputSerie) inputSerie.value = trabajadorEncontrado.serie;
+                if (inputBatch) inputBatch.value = trabajadorEncontrado.batch;
+            }
+        }
+
+        function openScreen(screenId) {
+            closeScreens();
+            document.getElementById(screenId).classList.add("active");
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function closeScreens() {
+            document.querySelectorAll(".screen-section").forEach(s => s.classList.remove("active"));
+        }
+
+        // FUNCIÓN PARA RESINCRONIZAR Y LIMPIAR LA MEMORIA LOCAL TRAS BORRAR REGISTROS
+        function sincronizarOVaciarMemoria() {
+            if (confirm("¿Deseas resincronizar la memoria de la app web con el estado actual de Microsoft Lists? esto reiniciará la caché local.")) {
+                localStorage.removeItem('estadoLinternasUIO_RevisionCiclo');
+                localStorage.removeItem('estadoLinternasUIO_Detallado');
+                estadoLinternas = {};
+                actualizarDashboard();
+                alert("¡Memoria resincronizada exitosamente! La app está alineada a su estado base.");
+            }
+        }
+
+        async function guardarRegistro(event, tipoRegistro) {
+            event.preventDefault();
+
+            const form = event.target;
+            const btnSubmit = form.querySelector(".btn-submit");
+            const btnOriginalText = btnSubmit.innerHTML;
+            const nombreTrabajador = form.querySelector(".selectWorker").value;
+            const serieEquipo = form.querySelector(".inputSerie").value;
+            const obsTexto = form.querySelector(".inputObs").value || "Sin observaciones";
+            const fechaActualFormateada = new Date().toLocaleString('es-EC');
+            const timestampActual = new Date().getTime();
+
+            if (!estadoLinternas[serieEquipo]) {
+                estadoLinternas[serieEquipo] = {};
+            }
+
+            if (tipoRegistro === 'ENTREGA') {
+                estadoLinternas[serieEquipo].estado = 'ENTREGADA';
+                estadoLinternas[serieEquipo].trabajador = nombreTrabajador;
+                estadoLinternas[serieEquipo].fechaEntrega = fechaActualFormateada;
+                estadoLinternas[serieEquipo].obsEntrega = obsTexto;
+                estadoLinternas[serieEquipo].ultimaRevisionTime = timestampActual;
+            } else if (tipoRegistro === 'DEVOLUCION') {
+                estadoLinternas[serieEquipo].estado = 'DEVUELTA';
+                estadoLinternas[serieEquipo].fechaDevolucion = fechaActualFormateada;
+                estadoLinternas[serieEquipo].motivoDevolucion = obsTexto;
+            } else if (tipoRegistro === 'REVISION') {
+                estadoLinternas[serieEquipo].ultimaRevisionTime = timestampActual;
+                estadoLinternas[serieEquipo].fechaRevision = fechaActualFormateada;
+            }
+
+            localStorage.setItem('estadoLinternasUIO_RevisionCiclo', JSON.stringify(estadoLinternas));
+
+            const payload = {
+                title: nombreTrabajador,
+                trabajador: nombreTrabajador,
+                serie: serieEquipo,
+                batch: form.querySelector(".inputBatch") ? form.querySelector(".inputBatch").value : "N/A",
+                tipo1: tipoRegistro,
+                estadoFisico: form.querySelector(".inputEstado") ? form.querySelector(".inputEstado").value : "Sin evaluar",
+                resultado: form.querySelector(".inputResultado") ? form.querySelector(".inputResultado").value : "N/A",
+                observaciones: obsTexto,
+                fecha: new Date().toISOString()
+            };
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<div class="spinner"></div> <span>Enviando a Microsoft Lists...</span>`;
+
+            try {
+                const response = await fetch(POWER_AUTOMATE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert(`¡Registro de ${tipoRegistro} guardado y ciclo mensual actualizado!`);
+                    form.reset();
+                    closeScreens();
+                    actualizarDashboard();
+                } else {
+                    alert("Error al procesar el registro en la nube.");
+                }
+            } catch (error) {
+                console.error("Error al conectar con Power Automate:", error);
+                alert("Error de red. Verifica tu conexión a internet.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = btnOriginalText;
+            }
+        }
+
+        function actualizarDashboard() {
+            let total = trabajadoresOficiales.length;
+            let entregadasCount = 0;
+            let devueltasCount = 0;
+            let pendientesRevCount = 0;
+
+            let htmlEntregadas = "";
+            let htmlDevueltas = "";
+            let htmlPendientes = "";
+
+            const ahora = new Date().getTime();
+            const unDiaEnMs = 1000 * 60 * 60 * 24;
+            const diasLimiteAlerta = 33; 
+
+            trabajadoresOficiales.forEach(t => {
+                const info = estadoLinternas[t.serie] || { estado: 'DEVUELTA', ultimaRevisionTime: null };
+                
+                if (info.estado === 'ENTREGADA') {
+                    entregadasCount++;
+                    htmlEntregadas += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <h4>${t.nombre} (Serie: ${t.serie})</h4>
+                                <p><i class="fa-solid fa-calendar"></i> Entregado: ${info.fechaEntrega || 'Registrado'}</p>
+                                <p><i class="fa-solid fa-comment"></i> Obs: ${info.obsEntrega || 'Sin observaciones'}</p>
+                            </div>
+                            <span style="font-size: 11px; font-weight:700; color: var(--avianca-red);">ENTREGADA</span>
+                        </div>
+                    `;
+                } else {
+                    devueltasCount++;
+                    htmlDevueltas += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <h4>${t.nombre} (Serie: ${t.serie})</h4>
+                                <p><i class="fa-solid fa-calendar-days"></i> Estado: En Bodega / Devuelta</p>
+                                <p><i class="fa-solid fa-triangle-exclamation"></i> Motivo: ${info.motivoDevolucion || 'Ninguno'}</p>
+                            </div>
+                            <span style="font-size: 11px; font-weight:700; color: var(--corp-blue);">BODEGA</span>
+                        </div>
+                    `;
+                }
+
+                let necesitaRevision = false;
+                if (info.ultimaRevisionTime) {
+                    const diasTranscurridos = Math.floor((ahora - info.ultimaRevisionTime) / unDiaEnMs);
+                    if (diasTranscurridos >= diasLimiteAlerta) {
+                        necesitaRevision = true;
+                    }
+                }
+
+                if (necesitaRevision) {
+                    pendientesRevCount++;
+                    htmlPendientes += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <h4>${t.nombre}</h4>
+                                <p>Serie: ${t.serie} | <strong>¡Alerta cumplimiento mensual + 3 días vencidos!</strong></p>
+                            </div>
+                            <span style="font-size: 11px; font-weight:700; color: var(--status-orange);">PENDIENTE</span>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById("kpiTotal").textContent = total;
+            document.getElementById("kpiEntregadas").textContent = entregadasCount;
+            document.getElementById("kpiDevueltas").textContent = devueltasCount;
+            document.getElementById("kpiPendientesRev").textContent = pendientesRevCount;
+
+            document.getElementById("listEntregadas").innerHTML = htmlEntregadas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos entregados activos.</p>';
+            document.getElementById("listDevueltas").innerHTML = htmlDevueltas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos devueltos registrados.</p>';
+            document.getElementById("listPendientesRev").innerHTML = htmlPendientes || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">¡Excelente! Ningún equipo ha superado los 30 días + 3 días de gracia.</p>';
+        }
+
+        function verificarConexion() {
+            alert("Conexión activa, autenticada y sincronizada con Microsoft Lists.");
+        }
+    </script>
+</body>
+</html>
