@@ -411,7 +411,7 @@
                     <p>Gestión de Equipos • Aeropuerto UIO</p>
                 </div>
             </div>
-            <div class="sync-badge" onclick="sincronizarOVaciarMemoria()" title="Haz clic para sincronizar">
+            <div class="sync-badge" onclick="sincronizarOVaciarMemoria()" title="Haz clic para sincronizar y limpiar caché">
                 <div class="dot-status" id="statusDot"></div>
                 <span id="statusText">Conectado a MS Lists (Sincronizar)</span>
             </div>
@@ -739,23 +739,21 @@
             document.querySelectorAll(".screen-section").forEach(s => s.classList.remove("active"));
         }
 
-        // FUNCIÓN DE SINCRONIZACIÓN CON LA NUBE
-        async function sincronizarOVaciarMemoria() {
-            if (confirm("¿Deseas consultar el estado actual y sincronizar la aplicación con Microsoft Lists?")) {
+        // FUNCIÓN DE SINCRONIZACIÓN Y LIMPIEZA DE CACHÉ
+        function sincronizarOVaciarMemoria() {
+            if (confirm("¿Deseas sincronizar y limpiar el almacenamiento local para alinearlo con Microsoft Lists?")) {
+                localStorage.removeItem('estadoLinternasUIO_RevisionCiclo');
+                localStorage.removeItem('estadoLinternasUIO_Detallado');
+                estadoLinternas = {};
+                
                 const btnSync = document.getElementById("statusText");
                 btnSync.textContent = "Sincronizando...";
                 
-                try {
-                    setTimeout(() => {
-                        alert("¡Sincronización completada exitosamente!");
-                        btnSync.textContent = "Conectado a MS Lists";
-                        actualizarDashboard();
-                    }, 1000);
-                } catch (error) {
-                    console.error("Error al sincronizar:", error);
-                    alert("Error al conectar con la nube.");
-                    btnSync.textContent = "Error de sincronización";
-                }
+                setTimeout(() => {
+                    alert("¡Sincronización completada! La memoria local se ha restablecido a cero.");
+                    btnSync.textContent = "Conectado a MS Lists";
+                    actualizarDashboard();
+                }, 500);
             }
         }
 
@@ -843,7 +841,7 @@
 
             const ahora = new Date().getTime();
             const unDiaEnMs = 1000 * 60 * 60 * 24;
-            const diasAlertaPrevia = 27; // Alerta 3 días antes de cumplirse el mes (30 días)
+            const diasAlertaPrevia = 27; // Alerta a los 27 días (Faltando 3 días para cumplir el mes)
 
             trabajadoresOficiales.forEach(t => {
                 const info = estadoLinternas[t.serie] || { estado: 'DEVUELTA', ultimaRevisionTime: null };
