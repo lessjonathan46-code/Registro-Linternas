@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --avianca-red: #D71920;
@@ -26,382 +28,83 @@
             --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background-color: var(--bg-gray); color: var(--text-main); padding-bottom: 40px; }
 
-        body {
-            background-color: var(--bg-gray);
-            color: var(--text-main);
-            padding-bottom: 40px;
-        }
-
-        /* HEADER CORPORATIVO */
         .header {
             background: linear-gradient(135deg, var(--avianca-red) 0%, #a80f14 100%);
-            color: white;
-            padding: 16px 20px;
+            color: white; padding: 16px 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
 
-        .header-container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-title i {
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-
-        .brand-title h1 {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-title p {
-            font-size: 11px;
-            opacity: 0.85;
-        }
+        .header-container { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .brand-title { display: flex; align-items: center; gap: 12px; }
+        .brand-title i { font-size: 24px; background: rgba(255, 255, 255, 0.2); padding: 8px 12px; border-radius: 8px; }
+        .brand-title h1 { font-size: 18px; font-weight: 700; }
+        .brand-title p { font-size: 11px; opacity: 0.85; }
 
         .sync-badge {
-            background-color: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
+            background-color: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer;
         }
+        .dot-status { width: 8px; height: 8px; border-radius: 50%; background-color: #28a745; }
 
-        .sync-badge:hover {
-            background-color: rgba(255,255,255,0.3);
-        }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+        .banner-info { background-color: #fff; border-left: 4px solid var(--corp-blue); padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; box-shadow: var(--shadow-soft); display: flex; align-items: center; gap: 12px; }
+        .banner-info i { color: var(--corp-blue); font-size: 18px; }
+        .banner-info p { font-size: 13px; color: var(--text-muted); }
 
-        .dot-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #28a745;
-        }
-
-        /* MAIN CONTAINER */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        /* BANNER */
-        .banner-info {
-            background-color: #fff;
-            border-left: 4px solid var(--corp-blue);
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-soft);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .banner-info i {
-            color: var(--corp-blue);
-            font-size: 18px;
-        }
-
-        .banner-info p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* BOTONES PRINCIPALES NAV */
-        .grid-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 500px) {
-            .grid-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 500px) { .grid-buttons { grid-template-columns: 1fr; } }
 
         .btn-action-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.25s ease;
-            text-align: left;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px 16px; display: flex; align-items: center;
+            gap: 16px; cursor: pointer; box-shadow: var(--shadow-soft); transition: all 0.25s ease;
         }
+        .btn-action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-        .btn-action-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .btn-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
+        .btn-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .icon-entrega { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
         .icon-devolucion { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
         .icon-revision { background-color: rgba(40, 167, 69, 0.1); color: var(--status-green); }
         .icon-dashboard { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
 
-        .btn-action-card h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
+        .screen-section { display: none; background-color: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); margin-bottom: 24px; }
+        .screen-section.active { display: block; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-gray); padding-bottom: 12px; margin-bottom: 20px; }
+        .section-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .btn-close { background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; }
 
-        .btn-action-card p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background-color: #FAFAFA; outline: none; }
+        .form-control:focus { border-color: var(--corp-blue); background-color: #FFF; }
 
-        /* FORMULARIOS Y PANTALLAS */
-        .screen-section {
-            display: none;
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-color);
-            margin-bottom: 24px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .screen-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--bg-gray);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        /* FORM CONTROLS */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            background-color: #FAFAFA;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: var(--corp-blue);
-            background-color: #FFF;
-        }
-
-        select.form-control {
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
+        .btn-submit { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
         .btn-red { background-color: var(--avianca-red); }
-        .btn-red:hover { background-color: var(--avianca-red-hover); }
-
         .btn-blue { background-color: var(--corp-blue); }
-        .btn-blue:hover { background-color: var(--corp-blue-hover); }
-
         .btn-green { background-color: var(--status-green); }
-        .btn-green:hover { background-color: #218838; }
 
-        /* DASHBOARD KPIS */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
-        }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .kpi-card { background-color: var(--bg-gray); border-radius: 8px; padding: 14px; text-align: center; border: 1px solid var(--border-color); }
+        .kpi-val { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .kpi-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
 
-        .kpi-card {
-            background-color: var(--bg-gray);
-            border-radius: 8px;
-            padding: 14px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .kpi-val {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .kpi-lbl {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        /* LISTAS DASHBOARD */
-        .list-section {
-            margin-top: 20px;
-        }
-
-        .list-header {
-            font-size: 14px;
-            font-weight: 700;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .list-header { font-size: 14px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .bg-entregadas { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
         .bg-devueltas { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
         .bg-pendientes { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
 
-        .item-card {
-            background-color: #FFF;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .item-info h4 {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .item-info p {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* FOOTER */
-        .footer {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 30px;
-        }
-
-        /* SPINNER LOADER */
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        .item-card { background-color: #FFF; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .item-info h4 { font-size: 13px; font-weight: 700; }
+        .item-info p { font-size: 11px; color: var(--text-muted); }
+        .footer { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 30px; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="header">
         <div class="header-container">
             <div class="brand-title">
@@ -411,236 +114,116 @@
                     <p>Gestión de Equipos • Aeropuerto UIO</p>
                 </div>
             </div>
-            <div class="sync-badge" onclick="sincronizarOVaciarMemoria()" title="Haz clic para sincronizar y limpiar caché">
+            <div class="sync-badge" onclick="cargarDatosEnVivo()">
                 <div class="dot-status" id="statusDot"></div>
-                <span id="statusText">Conectado a MS Lists (Sincronizar)</span>
+                <span id="statusText">Conectado a Supabase (En Vivo)</span>
             </div>
         </div>
     </header>
 
     <div class="container">
 
-        <!-- BANNER DE INICIO -->
-        <div class="banner-info" id="homeBanner">
-            <i class="fa-solid fa-cloud-check"></i>
-            <p>Sistema sincronizado con <strong>Microsoft Lists</strong> con alerta previa de revisión mensual (3 días antes del mes / día 27).</p>
+        <div class="banner-info">
+            <i class="fa-solid fa-database"></i>
+            <p>Sincronización en tiempo real vía <strong>Supabase</strong>. Alerta automática a los 27 días (3 días antes de cumplir el mes).</p>
         </div>
 
-        <!-- GRID DE NAVEGACIÓN PRINCIPAL -->
-        <div class="grid-buttons" id="mainMenu">
+        <div class="grid-buttons">
             <div class="btn-action-card" onclick="openScreen('screenEntrega')">
-                <div class="btn-icon icon-entrega">
-                    <i class="fa-solid fa-hand-holding"></i>
-                </div>
-                <div>
-                    <h3>Registrar Entrega</h3>
-                    <p>Asignar linterna con fecha y observaciones</p>
-                </div>
+                <div class="btn-icon icon-entrega"><i class="fa-solid fa-hand-holding"></i></div>
+                <div><h3>Registrar Entrega</h3><p>Asignar linterna a trabajador</p></div>
             </div>
-
             <div class="btn-action-card" onclick="openScreen('screenDevolucion')">
-                <div class="btn-icon icon-devolucion">
-                    <i class="fa-solid fa-rotate-left"></i>
-                </div>
-                <div>
-                    <h3>Registrar Devolución</h3>
-                    <p>Motivo, fecha y estado de devolución</p>
-                </div>
+                <div class="btn-icon icon-devolucion"><i class="fa-solid fa-rotate-left"></i></div>
+                <div><h3>Registrar Devolución</h3><p>Reingreso a bodega</p></div>
             </div>
-
             <div class="btn-action-card" onclick="openScreen('screenRevision')">
-                <div class="btn-icon icon-revision">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                </div>
-                <div>
-                    <h3>Revisión Mensual</h3>
-                    <p>Checklist de inspección periódica</p>
-                </div>
+                <div class="btn-icon icon-revision"><i class="fa-solid fa-clipboard-check"></i></div>
+                <div><h3>Revisión Mensual</h3><p>Inspección técnica</p></div>
             </div>
-
             <div class="btn-action-card" onclick="openScreen('screenDashboard')">
-                <div class="btn-icon icon-dashboard">
-                    <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <div>
-                    <h3>Dashboard</h3>
-                    <p>Indicadores clave y reportes</p>
-                </div>
+                <div class="btn-icon icon-dashboard"><i class="fa-solid fa-chart-pie"></i></div>
+                <div><h3>Dashboard</h3><p>Indicadores en tiempo real</p></div>
             </div>
         </div>
 
-        <!-- PANTALLA: REGISTRAR ENTREGA -->
+        <!-- ENTREGA -->
         <section class="screen-section" id="screenEntrega">
             <div class="section-header">
-                <div class="section-title">
-                    <i class="fa-solid fa-hand-holding" style="color: var(--avianca-red);"></i>
-                    <span>Registrar Entrega de Linterna</span>
-                </div>
+                <div class="section-title"><i class="fa-solid fa-hand-holding" style="color: var(--avianca-red);"></i><span>Registrar Entrega</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="formEntrega" onsubmit="guardarRegistro(event, 'ENTREGA')">
-                <div class="form-group">
-                    <label>Trabajador</label>
-                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
-                        <option value="">-- Seleccionar Trabajador --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Serie de Linterna</label>
-                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
-                </div>
-                <div class="form-group">
-                    <label>Batch / Lote</label>
-                    <input type="text" class="form-control inputBatch" placeholder="Ej: B-2026-A" required>
-                </div>
-                <div class="form-group">
-                    <label>Observaciones de Entrega</label>
-                    <textarea class="form-control inputObs" rows="3" placeholder="Detalles o comentarios de la entrega..." required></textarea>
-                </div>
-                <button type="submit" class="btn-submit btn-red" id="btnSubmitEntrega">
-                    <i class="fa-solid fa-download"></i> <span>REGISTRAR ENTREGA</span>
-                </button>
+            <form onsubmit="guardarEnSupabase(event, 'ENTREGA')">
+                <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
+                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Batch</label><input type="text" class="form-control inputBatch" required readonly></div>
+                <div class="form-group"><label>Observaciones</label><textarea class="form-control inputObs" rows="3" placeholder="Detalles de la entrega..."></textarea></div>
+                <button type="submit" class="btn-submit btn-red">REGISTRAR ENTREGA</button>
             </form>
         </section>
 
-        <!-- PANTALLA: REGISTRAR DEVOLUCIÓN -->
+        <!-- DEVOLUCION -->
         <section class="screen-section" id="screenDevolucion">
             <div class="section-header">
-                <div class="section-title">
-                    <i class="fa-solid fa-rotate-left" style="color: var(--corp-blue);"></i>
-                    <span>Registrar Devolución de Linterna</span>
-                </div>
+                <div class="section-title"><i class="fa-solid fa-rotate-left" style="color: var(--corp-blue);"></i><span>Registrar Devolución</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="formDevolucion" onsubmit="guardarRegistro(event, 'DEVOLUCION')">
-                <div class="form-group">
-                    <label>Trabajador</label>
-                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
-                        <option value="">-- Seleccionar Trabajador --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Serie de Linterna</label>
-                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
-                </div>
-                <div class="form-group">
-                    <label>Motivo de Devolución / Inconveniente</label>
-                    <textarea class="form-control inputObs" rows="3" placeholder="Ej: Falla de batería, mica rota, cambio de turno..." required></textarea>
-                </div>
-                <button type="submit" class="btn-submit btn-blue" id="btnSubmitDevolucion">
-                    <i class="fa-solid fa-upload"></i> <span>REGISTRAR DEVOLUCIÓN</span>
-                </button>
+            <form onsubmit="guardarEnSupabase(event, 'DEVOLUCION')">
+                <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
+                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Motivo</label><textarea class="form-control inputObs" rows="3" placeholder="Motivo de devolución..." required></textarea></div>
+                <button type="submit" class="btn-submit btn-blue">REGISTRAR DEVOLUCIÓN</button>
             </form>
         </section>
 
-        <!-- PANTALLA: REVISIÓN MENSUAL -->
+        <!-- REVISION -->
         <section class="screen-section" id="screenRevision">
             <div class="section-header">
-                <div class="section-title">
-                    <i class="fa-solid fa-clipboard-check" style="color: var(--status-green);"></i>
-                    <span>Revisión Mensual de Equipos</span>
-                </div>
+                <div class="section-title"><i class="fa-solid fa-clipboard-check" style="color: var(--status-green);"></i><span>Revisión Mensual</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="formRevision" onsubmit="guardarRegistro(event, 'REVISION')">
-                <div class="form-group">
-                    <label>Trabajador</label>
-                    <select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required>
-                        <option value="">-- Seleccionar Trabajador --</option>
-                    </select>
+            <form onsubmit="guardarEnSupabase(event, 'REVISION')">
+                <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
+                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Estado Físico</label>
+                    <select class="form-control inputEstado"><option value="Bueno">Bueno</option><option value="Regular">Regular</option><option value="Malo">Malo</option></select>
                 </div>
-                <div class="form-group">
-                    <label>Serie de Linterna</label>
-                    <input type="text" class="form-control inputSerie" placeholder="Ej: LNT-2026-001" required>
+                <div class="form-group"><label>Resultado</label>
+                    <select class="form-control inputResultado"><option value="Conforme">Conforme</option><option value="Con observacion">Con observación</option><option value="No conforme">No conforme</option></select>
                 </div>
-                <div class="form-group">
-                    <label>Estado Físico</label>
-                    <select class="form-control inputEstado" required>
-                        <option value="Bueno">Bueno</option>
-                        <option value="Regular">Regular</option>
-                        <option value="Malo">Malo</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Resultado de Inspección</label>
-                    <select class="form-control inputResultado" required>
-                        <option value="Conforme">Conforme</option>
-                        <option value="Con observacion">Con observación</option>
-                        <option value="No conforme">No conforme</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Observaciones Técnicas</label>
-                    <textarea class="form-control inputObs" rows="3" placeholder="Detalles de la inspección mensual..."></textarea>
-                </div>
-                <button type="submit" class="btn-submit btn-green" id="btnSubmitRevision">
-                    <i class="fa-solid fa-magnifying-glass"></i> <span>GUARDAR REVISIÓN</span>
-                </button>
+                <div class="form-group"><label>Observaciones</label><textarea class="form-control inputObs" rows="3"></textarea></div>
+                <button type="submit" class="btn-submit btn-green">GUARDAR REVISIÓN</button>
             </form>
         </section>
 
-        <!-- PANTALLA: DASHBOARD -->
+        <!-- DASHBOARD -->
         <section class="screen-section" id="screenDashboard">
             <div class="section-header">
-                <div class="section-title">
-                    <i class="fa-solid fa-chart-pie" style="color: var(--status-orange);"></i>
-                    <span>Dashboard de Operaciones</span>
-                </div>
+                <div class="section-title"><i class="fa-solid fa-chart-pie" style="color: var(--status-orange);"></i><span>Dashboard de Operaciones</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <!-- CARDS KPI -->
             <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-val" style="color: var(--corp-blue);" id="kpiTotal">44</div>
-                    <div class="kpi-lbl">Total Linternas</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val" style="color: var(--avianca-red);" id="kpiEntregadas">0</div>
-                    <div class="kpi-lbl">Entregadas</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val" style="color: var(--corp-blue);" id="kpiDevueltas">44</div>
-                    <div class="kpi-lbl">Devueltas / Bodega</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val" style="color: var(--status-orange);" id="kpiPendientesRev">0</div>
-                    <div class="kpi-lbl">Pend. Revisión</div>
-                </div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--corp-blue);" id="kpiTotal">44</div><div class="kpi-lbl">Total Linternas</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--avianca-red);" id="kpiEntregadas">0</div><div class="kpi-lbl">Entregadas</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--corp-blue);" id="kpiDevueltas">44</div><div class="kpi-lbl">Devueltas / Bodega</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--status-orange);" id="kpiPendientesRev">0</div><div class="kpi-lbl">Pend. Revisión</div></div>
             </div>
-
-            <!-- LISTAS -->
             <div class="list-section">
-                <div class="list-header bg-entregadas">
-                    <i class="fa-solid fa-circle-check"></i> Entregadas Activas
-                </div>
-                <div id="listEntregadas"></div>
-
-                <div class="list-header bg-devueltas" style="margin-top: 15px;">
-                    <i class="fa-solid fa-rotate-left"></i> Devueltas / Bodega
-                </div>
-                <div id="listDevueltas"></div>
-
-                <div class="list-header bg-pendientes" style="margin-top: 15px;">
-                    <i class="fa-solid fa-clock"></i> Pendientes de Revisión Mensual (Alerta a los 27 días / Faltando 3 días para el mes)
-                </div>
-                <div id="listPendientesRev"></div>
+                <div class="list-header bg-entregadas"><i class="fa-solid fa-circle-check"></i> Entregadas Activas</div><div id="listEntregadas"></div>
+                <div class="list-header bg-devueltas" style="margin-top: 15px;"><i class="fa-solid fa-rotate-left"></i> Devueltas / Bodega</div><div id="listDevueltas"></div>
+                <div class="list-header bg-pendientes" style="margin-top: 15px;"><i class="fa-solid fa-clock"></i> Pendientes de Revisión (Alerta día 27 / -3 días)</div><div id="listPendientesRev"></div>
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <div class="footer">
-            Control de Linternas UIO • Aeropuerto Internacional Mariscal Sucre<br>
-            Conectado a Microsoft Lists via Power Automate
-        </div>
-
+        <div class="footer">Control de Linternas UIO • Aeropuerto Mariscal Sucre • Conectado a Supabase</div>
     </div>
 
     <script>
-        // URL AUTENTICADA DE POWER AUTOMATE
-        const POWER_AUTOMATE_URL = "https://defaulta2addd3e83974579ba307a38803fc3.bf.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/5aed9a636bb34561a1c79b28912908e7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ib5Xa5XWkPBDqPU359kL_xPpy-mTAIIsDt-vEsCjKpQ";
+        // CONFIGURACIÓN DE SUPABASE ACTUALIZADA
+        const SUPABASE_URL = "https://axuiibjydkejyxbbcehd.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dWlpYmp5ZGtlanl4YmJjZWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMjM5MzksImV4cCI6MjEwODg5OTkzOX0.WfvnNVcup9hfGF6qqrx3jwSbbfYB3f6_KnFaVL4N5BE";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // LISTA OFICIAL DE LOS 44 TRABAJADORES
         const trabajadoresOficiales = [
             { nombre: "Conlago, Edison", serie: "564640 Q0126", batch: "RD4050489" },
             { nombre: "Perez, Daniel", serie: "236603 A0625", batch: "RD4050489" },
@@ -688,44 +271,33 @@
             { nombre: "Roh , Yupangui , Demin , Wilson", serie: "208434 A1024", batch: "RD3814575" }
         ];
 
-        let estadoLinternas = JSON.parse(localStorage.getItem('estadoLinternasUIO_RevisionCiclo')) || {};
+        let registrosNube = [];
 
         document.addEventListener("DOMContentLoaded", function() {
             populateWorkers();
-            actualizarDashboard();
+            cargarDatosEnVivo();
         });
 
         function populateWorkers() {
-            const selects = document.querySelectorAll(".selectWorker");
-            selects.forEach(select => {
+            document.querySelectorAll(".selectWorker").forEach(select => {
                 select.innerHTML = '<option value="">-- Seleccionar Trabajador --</option>';
                 trabajadoresOficiales.forEach(t => {
                     const opt = document.createElement("option");
-                    opt.value = t.nombre;
-                    opt.textContent = t.nombre;
+                    opt.value = t.nombre; opt.textContent = t.nombre;
                     select.appendChild(opt);
                 });
             });
         }
 
         function autocompletarEquipo(selectElement) {
-            const nombreSeleccionado = selectElement.value;
-            const formularioActual = selectElement.closest("form");
-            
-            const inputSerie = formularioActual.querySelector(".inputSerie");
-            const inputBatch = formularioActual.querySelector(".inputBatch");
-
-            if (!nombreSeleccionado) {
-                if (inputSerie) inputSerie.value = "";
-                if (inputBatch) inputBatch.value = "";
-                return;
-            }
-
-            const trabajadorEncontrado = trabajadoresOficiales.find(t => t.nombre === nombreSeleccionado);
-
-            if (trabajadorEncontrado) {
-                if (inputSerie) inputSerie.value = trabajadorEncontrado.serie;
-                if (inputBatch) inputBatch.value = trabajadorEncontrado.batch;
+            const form = selectElement.closest("form");
+            const trabajador = trabajadoresOficiales.find(t => t.nombre === selectElement.value);
+            if (trabajador) {
+                form.querySelector(".inputSerie").value = trabajador.serie;
+                if(form.querySelector(".inputBatch")) form.querySelector(".inputBatch").value = trabajador.batch;
+            } else {
+                form.querySelector(".inputSerie").value = "";
+                if(form.querySelector(".inputBatch")) form.querySelector(".inputBatch").value = "";
             }
         }
 
@@ -739,171 +311,116 @@
             document.querySelectorAll(".screen-section").forEach(s => s.classList.remove("active"));
         }
 
-        // FUNCIÓN DE SINCRONIZACIÓN Y LIMPIEZA DE CACHÉ
-        function sincronizarOVaciarMemoria() {
-            if (confirm("¿Deseas sincronizar y limpiar el almacenamiento local para alinearlo con Microsoft Lists?")) {
-                localStorage.removeItem('estadoLinternasUIO_RevisionCiclo');
-                localStorage.removeItem('estadoLinternasUIO_Detallado');
-                estadoLinternas = {};
-                
-                const btnSync = document.getElementById("statusText");
-                btnSync.textContent = "Sincronizando...";
-                
-                setTimeout(() => {
-                    alert("¡Sincronización completada! La memoria local se ha restablecido a cero.");
-                    btnSync.textContent = "Conectado a MS Lists";
-                    actualizarDashboard();
-                }, 500);
+        async function cargarDatosEnVivo() {
+            document.getElementById("statusText").textContent = "Cargando...";
+            const { data, error } = await _supabase
+                .from('linternas')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                document.getElementById("statusText").textContent = "Error al conectar";
+                return;
             }
+
+            registrosNube = data || [];
+            document.getElementById("statusText").textContent = "Conectado a Supabase (En Vivo)";
+            renderDashboard();
         }
 
-        async function guardarRegistro(event, tipoRegistro) {
+        async function guardarEnSupabase(event, tipo) {
             event.preventDefault();
-
             const form = event.target;
-            const btnSubmit = form.querySelector(".btn-submit");
-            const btnOriginalText = btnSubmit.innerHTML;
-            const nombreTrabajador = form.querySelector(".selectWorker").value;
-            const serieEquipo = form.querySelector(".inputSerie").value;
-            const obsTexto = form.querySelector(".inputObs").value || "Sin observaciones";
-            const fechaActualFormateada = new Date().toLocaleString('es-EC');
-            const timestampActual = new Date().getTime();
+            const btn = form.querySelector(".btn-submit");
+            btn.disabled = true;
 
-            if (!estadoLinternas[serieEquipo]) {
-                estadoLinternas[serieEquipo] = {};
-            }
-
-            if (tipoRegistro === 'ENTREGA') {
-                estadoLinternas[serieEquipo].estado = 'ENTREGADA';
-                estadoLinternas[serieEquipo].trabajador = nombreTrabajador;
-                estadoLinternas[serieEquipo].fechaEntrega = fechaActualFormateada;
-                estadoLinternas[serieEquipo].obsEntrega = obsTexto;
-                estadoLinternas[serieEquipo].ultimaRevisionTime = timestampActual;
-            } else if (tipoRegistro === 'DEVOLUCION') {
-                estadoLinternas[serieEquipo].estado = 'DEVUELTA';
-                estadoLinternas[serieEquipo].fechaDevolucion = fechaActualFormateada;
-                estadoLinternas[serieEquipo].motivoDevolucion = obsTexto;
-            } else if (tipoRegistro === 'REVISION') {
-                estadoLinternas[serieEquipo].ultimaRevisionTime = timestampActual;
-                estadoLinternas[serieEquipo].fechaRevision = fechaActualFormateada;
-            }
-
-            localStorage.setItem('estadoLinternasUIO_RevisionCiclo', JSON.stringify(estadoLinternas));
-
-            const payload = {
-                title: nombreTrabajador,
-                trabajador: nombreTrabajador,
-                serie: serieEquipo,
+            const trabajador = form.querySelector(".selectWorker").value;
+            const serie = form.querySelector(".inputSerie").value;
+            const obs = form.querySelector(".inputObs") ? form.querySelector(".inputObs").value : "";
+            
+            const nuevoRegistro = {
+                trabajador: trabajador,
+                serie: serie,
                 batch: form.querySelector(".inputBatch") ? form.querySelector(".inputBatch").value : "N/A",
-                tipo1: tipoRegistro,
-                estadoFisico: form.querySelector(".inputEstado") ? form.querySelector(".inputEstado").value : "Sin evaluar",
+                tipo: tipo,
+                estado_fisico: form.querySelector(".inputEstado") ? form.querySelector(".inputEstado").value : "Sin evaluar",
                 resultado: form.querySelector(".inputResultado") ? form.querySelector(".inputResultado").value : "N/A",
-                observaciones: obsTexto,
-                fecha: new Date().toISOString()
+                observaciones: obs,
+                estado_actual: tipo === 'ENTREGA' ? 'ENTREGADA' : (tipo === 'DEVOLUCION' ? 'DEVUELTA' : undefined),
+                fecha_registro: new Date().toLocaleString('es-EC')
             };
 
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<div class="spinner"></div> <span>Enviando a Microsoft Lists...</span>`;
+            const { error } = await _supabase.from('linternas').insert([nuevoRegistro]);
 
-            try {
-                const response = await fetch(POWER_AUTOMATE_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    alert(`¡Registro de ${tipoRegistro} guardado y ciclo mensual actualizado!`);
-                    form.reset();
-                    closeScreens();
-                    actualizarDashboard();
-                } else {
-                    alert("Error al procesar el registro en la nube.");
-                }
-            } catch (error) {
-                console.error("Error al conectar con Power Automate:", error);
-                alert("Error de red. Verifica tu conexión a internet.");
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = btnOriginalText;
+            if (error) {
+                alert("Error al guardar en Supabase");
+                console.error(error);
+            } else {
+                alert(`¡${tipo} registrada con éxito!`);
+                form.reset();
+                closeScreens();
+                await cargarDatosEnVivo();
             }
+            btn.disabled = false;
         }
 
-        function actualizarDashboard() {
-            let total = trabajadoresOficiales.length;
-            let entregadasCount = 0;
-            let devueltasCount = 0;
-            let pendientesRevCount = 0;
-
-            let htmlEntregadas = "";
-            let htmlDevueltas = "";
-            let htmlPendientes = "";
-
-            const ahora = new Date().getTime();
-            const unDiaEnMs = 1000 * 60 * 60 * 24;
-            const diasAlertaPrevia = 27; // Alerta a los 27 días (Faltando 3 días para cumplir el mes)
+        function renderDashboard() {
+            let mapaEstados = {};
 
             trabajadoresOficiales.forEach(t => {
-                const info = estadoLinternas[t.serie] || { estado: 'DEVUELTA', ultimaRevisionTime: null };
-                
-                if (info.estado === 'ENTREGADA') {
-                    entregadasCount++;
-                    htmlEntregadas += `
-                        <div class="item-card">
-                            <div class="item-info">
-                                <h4>${t.nombre} (Serie: ${t.serie})</h4>
-                                <p><i class="fa-solid fa-calendar"></i> Entregado: ${info.fechaEntrega || 'Registrado'}</p>
-                                <p><i class="fa-solid fa-comment"></i> Obs: ${info.obsEntrega || 'Sin observaciones'}</p>
-                            </div>
-                            <span style="font-size: 11px; font-weight:700; color: var(--avianca-red);">ENTREGADA</span>
-                        </div>
-                    `;
-                } else {
-                    devueltasCount++;
-                    htmlDevueltas += `
-                        <div class="item-card">
-                            <div class="item-info">
-                                <h4>${t.nombre} (Serie: ${t.serie})</h4>
-                                <p><i class="fa-solid fa-calendar-days"></i> Estado: En Bodega / Devuelta</p>
-                                <p><i class="fa-solid fa-triangle-exclamation"></i> Motivo: ${info.motivoDevolucion || 'Ninguno'}</p>
-                            </div>
-                            <span style="font-size: 11px; font-weight:700; color: var(--corp-blue);">BODEGA</span>
-                        </div>
-                    `;
-                }
+                mapaEstados[t.serie] = {
+                    trabajador: t.nombre,
+                    serie: t.serie,
+                    estado: 'DEVUELTA',
+                    ultimaActividad: null,
+                    fechaEntrega: null,
+                    obs: ''
+                };
+            });
 
-                let necesitaRevision = false;
-                if (!info.ultimaRevisionTime) {
-                    necesitaRevision = true; 
-                } else {
-                    const diasTranscurridos = Math.floor((ahora - info.ultimaRevisionTime) / unDiaEnMs);
-                    if (diasTranscurridos >= diasAlertaPrevia) {
-                        necesitaRevision = true;
+            [...registrosNube].reverse().forEach(r => {
+                if (mapaEstados[r.serie]) {
+                    if (r.tipo === 'ENTREGA') {
+                        mapaEstados[r.serie].estado = 'ENTREGADA';
+                        mapaEstados[r.serie].fechaEntrega = r.fecha_registro;
+                        mapaEstados[r.serie].obs = r.observaciones;
+                    } else if (r.tipo === 'DEVOLUCION') {
+                        mapaEstados[r.serie].estado = 'DEVUELTA';
+                        mapaEstados[r.serie].obs = r.observaciones;
                     }
-                }
-
-                if (necesitaRevision) {
-                    pendientesRevCount++;
-                    htmlPendientes += `
-                        <div class="item-card">
-                            <div class="item-info">
-                                <h4>${t.nombre}</h4>
-                                <p>Serie: ${t.serie} | <strong>¡Alerta: Faltan 3 días o menos para cumplir el mes de revisión!</strong></p>
-                            </div>
-                            <span style="font-size: 11px; font-weight:700; color: var(--status-orange);">PENDIENTE</span>
-                        </div>
-                    `;
+                    mapaEstados[r.serie].ultimaActividad = new Date(r.created_at).getTime();
                 }
             });
 
-            document.getElementById("kpiTotal").textContent = total;
+            let entregadasCount = 0, devueltasCount = 0, pendientesCount = 0;
+            let htmlE = "", htmlD = "", htmlP = "";
+            const ahora = new Date().getTime();
+            const dias27 = 27 * 24 * 60 * 60 * 1000;
+
+            Object.values(mapaEstados).forEach(item => {
+                if (item.estado === 'ENTREGADA') {
+                    entregadasCount++;
+                    htmlE += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p>Entregado: ${item.fechaEntrega || 'S/F'}</p><p>Obs: ${item.obs}</p></div><span style="color:var(--avianca-red); font-weight:700;">ENTREGADA</span></div>`;
+                } else {
+                    devueltasCount++;
+                    htmlD += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p>Estado: En Bodega</p></div><span style="color:var(--corp-blue); font-weight:700;">BODEGA</span></div>`;
+                }
+
+                if (!item.ultimaActividad || (ahora - item.ultimaActividad) >= dias27) {
+                    pendientesCount++;
+                    htmlP += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p><strong>Alerta: Faltan 3 días o menos para el cumplimiento mensual</strong></p></div><span style="color:var(--status-orange); font-weight:700;">PENDIENTE</span></div>`;
+                }
+            });
+
+            document.getElementById("kpiTotal").textContent = trabajadoresOficiales.length;
             document.getElementById("kpiEntregadas").textContent = entregadasCount;
             document.getElementById("kpiDevueltas").textContent = devueltasCount;
-            document.getElementById("kpiPendientesRev").textContent = pendientesRevCount;
+            document.getElementById("kpiPendientesRev").textContent = pendientesCount;
 
-            document.getElementById("listEntregadas").innerHTML = htmlEntregadas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos entregados activos.</p>';
-            document.getElementById("listDevueltas").innerHTML = htmlDevueltas || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">No hay equipos devueltos registrados.</p>';
-            document.getElementById("listPendientesRev").innerHTML = htmlPendientes || '<p style="font-size:12px; color:var(--text-muted); padding:8px;">¡Excelente! Ningún equipo está a 3 días o menos de cumplir el mes.</p>';
+            document.getElementById("listEntregadas").innerHTML = htmlE || '<p style="font-size:12px; padding:8px;">No hay equipos entregados.</p>';
+            document.getElementById("listDevueltas").innerHTML = htmlD || '<p style="font-size:12px; padding:8px;">No hay equipos en bodega.</p>';
+            document.getElementById("listPendientesRev").innerHTML = htmlP || '<p style="font-size:12px; padding:8px;">Ningún equipo pendiente de revisión.</p>';
         }
     </script>
 </body>
