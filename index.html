@@ -3,104 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONTROL DE LINTERNAS UIO</title>
+    <title>Control y Gestión de Linternas</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --avianca-red: #D71920;
-            --avianca-red-hover: #b51218;
-            --corp-blue: #0078D4;
-            --corp-blue-hover: #005a9e;
-            --status-green: #28A745;
-            --status-orange: #FF8C00;
-            --status-red: #DC3545;
-            --bg-gray: #F4F6F9;
-            --card-bg: #FFFFFF;
-            --text-main: #333333;
-            --text-muted: #6C757D;
-            --border-color: #E2E8F0;
-            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --primary: #D71920;
+            --primary-hover: #b51218;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 14px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background-color: var(--bg-gray); color: var(--text-main); padding-bottom: 40px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding-bottom: 50px; }
 
+        /* Header Moderno */
         .header {
-            background: linear-gradient(135deg, var(--avianca-red) 0%, #a80f14 100%);
-            color: white; padding: 16px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            position: sticky; top: 0; z-index: 100;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 24px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .header-container { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-        .brand-title { display: flex; align-items: center; gap: 12px; }
-        .brand-title i { font-size: 24px; background: rgba(255, 255, 255, 0.2); padding: 8px 12px; border-radius: 8px; }
-        .brand-title h1 { font-size: 18px; font-weight: 700; }
-        .brand-title p { font-size: 11px; opacity: 0.85; }
+        .header-container { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+        .brand-title { display: flex; align-items: center; gap: 16px; }
+        .brand-icon-wrapper {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff4d55 100%);
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(215, 25, 32, 0.3);
+        }
+        .brand-title i { font-size: 22px; color: white; }
+        .brand-title h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+        .brand-title p { font-size: 12px; opacity: 0.7; font-weight: 400; margin-top: 2px; }
 
         .sync-badge {
-            background-color: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px;
-            font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
         }
-        .dot-status { width: 8px; height: 8px; border-radius: 50%; background-color: #28a745; }
+        .sync-badge:hover { background-color: rgba(255, 255, 255, 0.15); }
+        .dot-status { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); box-shadow: 0 0 8px var(--success); }
 
-        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
-        .banner-info { background-color: #fff; border-left: 4px solid var(--corp-blue); padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; box-shadow: var(--shadow-soft); display: flex; align-items: center; gap: 12px; }
-        .banner-info i { color: var(--corp-blue); font-size: 18px; }
-        .banner-info p { font-size: 13px; color: var(--text-muted); }
+        /* Contenedor Principal */
+        .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
 
-        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-        @media (max-width: 500px) { .grid-buttons { grid-template-columns: 1fr; } }
+        /* Banner Informativo */
+        .banner-info {
+            background: linear-gradient(to right, #eff6ff, #f8fafc);
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid var(--secondary);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .banner-info i { color: var(--secondary); font-size: 20px; background: #e0f2fe; padding: 10px; border-radius: 10px; }
+        .banner-info p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .banner-info strong { color: var(--text-main); }
+
+        /* Grid de Botones de Acción */
+        .grid-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px; }
 
         .btn-action-card {
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 20px 16px; display: flex; align-items: center;
-            gap: 16px; cursor: pointer; box-shadow: var(--shadow-soft); transition: all 0.25s ease;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
-        .btn-action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        .btn-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: transparent;
+            transition: var(--transition);
+        }
+        .btn-action-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: transparent; }
+        
+        .card-entrega:hover::before { background-color: var(--primary); }
+        .card-devolucion:hover::before { background-color: var(--secondary); }
+        .card-revision:hover::before { background-color: var(--success); }
+        .card-dashboard:hover::before { background-color: var(--warning); }
 
-        .btn-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .icon-entrega { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
-        .icon-devolucion { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
-        .icon-revision { background-color: rgba(40, 167, 69, 0.1); color: var(--status-green); }
-        .icon-dashboard { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
+        .card-top { display: flex; align-items: center; justify-content: space-between; }
+        .btn-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        
+        .icon-entrega { background-color: rgba(215, 25, 32, 0.1); color: var(--primary); }
+        .icon-devolucion { background-color: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+        .icon-revision { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .icon-dashboard { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
 
-        .screen-section { display: none; background-color: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); margin-bottom: 24px; }
+        .card-info h3 { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .card-info p { font-size: 12px; color: var(--text-muted); }
+
+        /* Secciones Desplegables (Formularios / Dashboard) */
+        .screen-section {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
         .screen-section.active { display: block; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-gray); padding-bottom: 12px; margin-bottom: 20px; }
-        .section-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .btn-close { background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; background-color: #FAFAFA; outline: none; }
-        .form-control:focus { border-color: var(--corp-blue); background-color: #FFF; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .btn-submit { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
-        .btn-red { background-color: var(--avianca-red); }
-        .btn-blue { background-color: var(--corp-blue); }
-        .btn-green { background-color: var(--status-green); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px; }
+        .section-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+        
+        .btn-close {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-close:hover { background-color: var(--danger); color: white; border-color: var(--danger); }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .kpi-card { background-color: var(--bg-gray); border-radius: 8px; padding: 14px; text-align: center; border: 1px solid var(--border-color); }
-        .kpi-val { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-        .kpi-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; }
+        /* Formularios Estilizados */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-control:focus { border-color: var(--secondary); background-color: #FFF; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
+        textarea.form-control { resize: vertical; min-height: 90px; }
 
-        .list-header { font-size: 14px; font-weight: 700; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .bg-entregadas { background-color: rgba(215, 25, 32, 0.1); color: var(--avianca-red); }
-        .bg-devueltas { background-color: rgba(0, 120, 212, 0.1); color: var(--corp-blue); }
-        .bg-pendientes { background-color: rgba(255, 140, 0, 0.1); color: var(--status-orange); }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-submit:hover { opacity: 0.95; transform: translateY(-2px); }
+        .btn-red { background: linear-gradient(135deg, var(--primary) 0%, #b51218 100%); }
+        .btn-blue { background: linear-gradient(135deg, var(--secondary) 0%, #0284c7 100%); }
+        .btn-green { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); }
 
-        .item-card { background-color: #FFF; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .item-info h4 { font-size: 13px; font-weight: 700; }
-        .item-info p { font-size: 11px; color: var(--text-muted); }
-        .footer { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 30px; }
+        /* KPIs Dashboard */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .kpi-card {
+            background-color: var(--bg-main);
+            border-radius: var(--radius);
+            padding: 18px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+        .kpi-val { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+        .kpi-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Listas de Dashboard */
+        .list-section { display: flex; flex-direction: column; gap: 20px; }
+        .list-header {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .bg-entregadas { background-color: rgba(215, 25, 32, 0.08); color: var(--primary); }
+        .bg-devueltas { background-color: rgba(14, 165, 233, 0.08); color: var(--secondary); }
+        .bg-pendientes { background-color: rgba(245, 158, 11, 0.08); color: var(--warning); }
+
+        .item-card {
+            background-color: #FFF;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .item-card:hover { border-color: var(--secondary); }
+        .item-info h4 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .item-info p { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        
+        .status-tag { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; }
+        .tag-entregada { background-color: rgba(215, 25, 32, 0.1); color: var(--primary); }
+        .tag-bodega { background-color: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+        .tag-pendiente { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+        .footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 40px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -108,15 +263,17 @@
     <header class="header">
         <div class="header-container">
             <div class="brand-title">
-                <i class="fa-solid fa-flashlight"></i>
+                <div class="brand-icon-wrapper">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
                 <div>
-                    <h1>CONTROL LINTERNAS UIO</h1>
-                    <p>Gestión de Equipos • Aeropuerto UIO</p>
+                    <h1>CONTROL DE LINTERNAS</h1>
+                    <p>Gestión de Equipos y Auditoría Técnica</p>
                 </div>
             </div>
-            <div class="sync-badge" onclick="cargarDatosEnVivo()">
+            <div class="sync-badge" onclick="cargarDatosEnVivo()" title="Actualizar datos">
                 <div class="dot-status" id="statusDot"></div>
-                <span id="statusText">Conectado a Supabase (En Vivo)</span>
+                <span id="statusText">Conectado (En Vivo)</span>
             </div>
         </div>
     </header>
@@ -124,102 +281,139 @@
     <div class="container">
 
         <div class="banner-info">
-            <i class="fa-solid fa-database"></i>
-            <p>Sincronización en tiempo real vía <strong>Supabase</strong>. Alerta automática a los 27 días (3 días antes de cumplir el mes).</p>
+            <i class="fa-solid fa-cloud-arrow-down"></i>
+            <div>
+                <p><strong>Sincronización Cloud Activa:</strong> Monitoreo inteligente en tiempo real mediante Supabase. Alerta automatizada configurada a los 27 días de ciclo operativo.</p>
+            </div>
         </div>
 
         <div class="grid-buttons">
-            <div class="btn-action-card" onclick="openScreen('screenEntrega')">
-                <div class="btn-icon icon-entrega"><i class="fa-solid fa-hand-holding"></i></div>
-                <div><h3>Registrar Entrega</h3><p>Asignar linterna a trabajador</p></div>
+            <div class="btn-action-card card-entrega" onclick="openScreen('screenEntrega')">
+                <div class="card-top">
+                    <div class="btn-icon icon-entrega"><i class="fa-solid fa-hand-holding-hand"></i></div>
+                    <i class="fa-solid fa-arrow-right" style="color: var(--text-muted); font-size: 14px;"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Registrar Entrega</h3>
+                    <p>Asignar equipo a colaborador</p>
+                </div>
             </div>
-            <div class="btn-action-card" onclick="openScreen('screenDevolucion')">
-                <div class="btn-icon icon-devolucion"><i class="fa-solid fa-rotate-left"></i></div>
-                <div><h3>Registrar Devolución</h3><p>Reingreso a bodega</p></div>
+
+            <div class="btn-action-card card-devolucion" onclick="openScreen('screenDevolucion')">
+                <div class="card-top">
+                    <div class="btn-icon icon-devolucion"><i class="fa-solid fa-rotate-left"></i></div>
+                    <i class="fa-solid fa-arrow-right" style="color: var(--text-muted); font-size: 14px;"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Registrar Devolución</h3>
+                    <p>Reingreso seguro a bodega</p>
+                </div>
             </div>
-            <div class="btn-action-card" onclick="openScreen('screenRevision')">
-                <div class="btn-icon icon-revision"><i class="fa-solid fa-clipboard-check"></i></div>
-                <div><h3>Revisión Mensual</h3><p>Inspección técnica</p></div>
+
+            <div class="btn-action-card card-revision" onclick="openScreen('screenRevision')">
+                <div class="card-top">
+                    <div class="btn-icon icon-revision"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <i class="fa-solid fa-arrow-right" style="color: var(--text-muted); font-size: 14px;"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Revisión Mensual</h3>
+                    <p>Inspección y estado físico</p>
+                </div>
             </div>
-            <div class="btn-action-card" onclick="openScreen('screenDashboard')">
-                <div class="btn-icon icon-dashboard"><i class="fa-solid fa-chart-pie"></i></div>
-                <div><h3>Dashboard</h3><p>Indicadores en tiempo real</p></div>
+
+            <div class="btn-action-card card-dashboard" onclick="openScreen('screenDashboard')">
+                <div class="card-top">
+                    <div class="btn-icon icon-dashboard"><i class="fa-solid fa-chart-pie"></i></div>
+                    <i class="fa-solid fa-arrow-right" style="color: var(--text-muted); font-size: 14px;"></i>
+                </div>
+                <div class="card-info">
+                    <h3>Dashboard</h3>
+                    <p>Métricas y reportes generales</p>
+                </div>
             </div>
         </div>
 
         <!-- ENTREGA -->
         <section class="screen-section" id="screenEntrega">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-hand-holding" style="color: var(--avianca-red);"></i><span>Registrar Entrega</span></div>
+                <div class="section-title"><i class="fa-solid fa-hand-holding-hand" style="color: var(--primary);"></i><span>Registrar Entrega de Equipo</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="guardarEnSupabase(event, 'ENTREGA')">
                 <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
-                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Número de Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
                 <div class="form-group"><label>Batch</label><input type="text" class="form-control inputBatch" required readonly></div>
                 <div class="form-group"><label>Observaciones</label><textarea class="form-control inputObs" rows="3" placeholder="Detalles de la entrega..."></textarea></div>
-                <button type="submit" class="btn-submit btn-red">REGISTRAR ENTREGA</button>
+                <button type="submit" class="btn-submit btn-red"><i class="fa-solid fa-check"></i> REGISTRAR ENTREGA</button>
             </form>
         </section>
 
         <!-- DEVOLUCION -->
         <section class="screen-section" id="screenDevolucion">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-rotate-left" style="color: var(--corp-blue);"></i><span>Registrar Devolución</span></div>
+                <div class="section-title"><i class="fa-solid fa-rotate-left" style="color: var(--secondary);"></i><span>Registrar Devolución de Equipo</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="guardarEnSupabase(event, 'DEVOLUCION')">
                 <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
-                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
-                <div class="form-group"><label>Motivo</label><textarea class="form-control inputObs" rows="3" placeholder="Motivo de devolución..." required></textarea></div>
-                <button type="submit" class="btn-submit btn-blue">REGISTRAR DEVOLUCIÓN</button>
+                <div class="form-group"><label>Número de Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Motivo de Devolución</label><textarea class="form-control inputObs" rows="3" placeholder="Detalle el motivo o estado del equipo..." required></textarea></div>
+                <button type="submit" class="btn-submit btn-blue"><i class="fa-solid fa-check"></i> REGISTRAR DEVOLUCIÓN</button>
             </form>
         </section>
 
         <!-- REVISION -->
         <section class="screen-section" id="screenRevision">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-clipboard-check" style="color: var(--status-green);"></i><span>Revisión Mensual</span></div>
+                <div class="section-title"><i class="fa-solid fa-clipboard-check" style="color: var(--success);"></i><span>Revisión Técnica Mensual</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="guardarEnSupabase(event, 'REVISION')">
                 <div class="form-group"><label>Trabajador</label><select class="form-control selectWorker" onchange="autocompletarEquipo(this)" required></select></div>
-                <div class="form-group"><label>Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
+                <div class="form-group"><label>Número de Serie</label><input type="text" class="form-control inputSerie" required readonly></div>
                 <div class="form-group"><label>Estado Físico</label>
                     <select class="form-control inputEstado"><option value="Bueno">Bueno</option><option value="Regular">Regular</option><option value="Malo">Malo</option></select>
                 </div>
-                <div class="form-group"><label>Resultado</label>
+                <div class="form-group"><label>Resultado de Inspección</label>
                     <select class="form-control inputResultado"><option value="Conforme">Conforme</option><option value="Con observacion">Con observación</option><option value="No conforme">No conforme</option></select>
                 </div>
-                <div class="form-group"><label>Observaciones</label><textarea class="form-control inputObs" rows="3"></textarea></div>
-                <button type="submit" class="btn-submit btn-green">GUARDAR REVISIÓN</button>
+                <div class="form-group"><label>Observaciones Adicionales</label><textarea class="form-control inputObs" rows="3" placeholder="Notas de la revisión..."></textarea></div>
+                <button type="submit" class="btn-submit btn-green"><i class="fa-solid fa-check"></i> GUARDAR REVISIÓN</button>
             </form>
         </section>
 
         <!-- DASHBOARD -->
         <section class="screen-section" id="screenDashboard">
             <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-chart-pie" style="color: var(--status-orange);"></i><span>Dashboard de Operaciones</span></div>
+                <div class="section-title"><i class="fa-solid fa-chart-pie" style="color: var(--warning);"></i><span>Dashboard de Operaciones</span></div>
                 <button class="btn-close" onclick="closeScreens()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-val" style="color: var(--corp-blue);" id="kpiTotal">44</div><div class="kpi-lbl">Total Linternas</div></div>
-                <div class="kpi-card"><div class="kpi-val" style="color: var(--avianca-red);" id="kpiEntregadas">0</div><div class="kpi-lbl">Entregadas</div></div>
-                <div class="kpi-card"><div class="kpi-val" style="color: var(--corp-blue);" id="kpiDevueltas">44</div><div class="kpi-lbl">Devueltas / Bodega</div></div>
-                <div class="kpi-card"><div class="kpi-val" style="color: var(--status-orange);" id="kpiPendientesRev">0</div><div class="kpi-lbl">Pend. Revisión</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--text-main);" id="kpiTotal">44</div><div class="kpi-lbl">Total Linternas</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--primary);" id="kpiEntregadas">0</div><div class="kpi-lbl">Entregadas</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--secondary);" id="kpiDevueltas">44</div><div class="kpi-lbl">En Bodega</div></div>
+                <div class="kpi-card"><div class="kpi-val" style="color: var(--warning);" id="kpiPendientesRev">0</div><div class="kpi-lbl">Pend. Revisión</div></div>
             </div>
             <div class="list-section">
-                <div class="list-header bg-entregadas"><i class="fa-solid fa-circle-check"></i> Entregadas Activas</div><div id="listEntregadas"></div>
-                <div class="list-header bg-devueltas" style="margin-top: 15px;"><i class="fa-solid fa-rotate-left"></i> Devueltas / Bodega</div><div id="listDevueltas"></div>
-                <div class="list-header bg-pendientes" style="margin-top: 15px;"><i class="fa-solid fa-clock"></i> Pendientes de Revisión (Alerta día 27 / -3 días)</div><div id="listPendientesRev"></div>
+                <div>
+                    <div class="list-header bg-entregadas"><i class="fa-solid fa-circle-check"></i> Equipos Entregados Activos</div>
+                    <div id="listEntregadas"></div>
+                </div>
+                <div>
+                    <div class="list-header bg-devueltas"><i class="fa-solid fa-warehouse"></i> Equipos en Bodega</div>
+                    <div id="listDevueltas"></div>
+                </div>
+                <div>
+                    <div class="list-header bg-pendientes"><i class="fa-solid fa-triangle-exclamation"></i> Pendientes de Revisión (Alerta Próxima)</div>
+                    <div id="listPendientesRev"></div>
+                </div>
             </div>
         </section>
 
-        <div class="footer">Control de Linternas UIO • Aeropuerto Mariscal Sucre • Conectado a Supabase</div>
+        <div class="footer">Control de Linternas • Plataforma de Gestión Cloud Integrada</div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE SUPABASE ACTUALIZADA
         const SUPABASE_URL = "https://axuiibjydkejyxbbcehd.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dWlpYmp5ZGtlanl4YmJjZWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMjM5MzksImV4cCI6MjEwODg5OTkzOX0.WfvnNVcup9hfGF6qqrx3jwSbbfYB3f6_KnFaVL4N5BE";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -325,7 +519,7 @@
             }
 
             registrosNube = data || [];
-            document.getElementById("statusText").textContent = "Conectado a Supabase (En Vivo)";
+            document.getElementById("statusText").textContent = "Conectado (En Vivo)";
             renderDashboard();
         }
 
@@ -401,15 +595,15 @@
             Object.values(mapaEstados).forEach(item => {
                 if (item.estado === 'ENTREGADA') {
                     entregadasCount++;
-                    htmlE += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p>Entregado: ${item.fechaEntrega || 'S/F'}</p><p>Obs: ${item.obs}</p></div><span style="color:var(--avianca-red); font-weight:700;">ENTREGADA</span></div>`;
+                    htmlE += `<div class="item-card"><div class="item-info"><h4>${item.trabajador}</h4><p><strong>Serie:</strong> ${item.serie} &bull; <strong>Entrega:</strong> ${item.fechaEntrega || 'S/F'}</p><p><strong>Obs:</strong> ${item.obs || 'Ninguna'}</p></div><span class="status-tag tag-entregada">Entregada</span></div>`;
                 } else {
                     devueltasCount++;
-                    htmlD += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p>Estado: En Bodega</p></div><span style="color:var(--corp-blue); font-weight:700;">BODEGA</span></div>`;
+                    htmlD += `<div class="item-card"><div class="item-info"><h4>${item.trabajador}</h4><p><strong>Serie:</strong> ${item.serie} &bull; Estado en Bodega</p></div><span class="status-tag tag-bodega">Bodega</span></div>`;
                 }
 
                 if (!item.ultimaActividad || (ahora - item.ultimaActividad) >= dias27) {
                     pendientesCount++;
-                    htmlP += `<div class="item-card"><div class="item-info"><h4>${item.trabajador} (${item.serie})</h4><p><strong>Alerta: Faltan 3 días o menos para el cumplimiento mensual</strong></p></div><span style="color:var(--status-orange); font-weight:700;">PENDIENTE</span></div>`;
+                    htmlP += `<div class="item-card"><div class="item-info"><h4>${item.trabajador}</h4><p><strong>Serie:</strong> ${item.serie} &bull; <span style="color:var(--warning); font-weight:600;">Revisión requerida (Próxima al mes)</span></p></div><span class="status-tag tag-pendiente">Pendiente</span></div>`;
                 }
             });
 
@@ -418,9 +612,9 @@
             document.getElementById("kpiDevueltas").textContent = devueltasCount;
             document.getElementById("kpiPendientesRev").textContent = pendientesCount;
 
-            document.getElementById("listEntregadas").innerHTML = htmlE || '<p style="font-size:12px; padding:8px;">No hay equipos entregados.</p>';
-            document.getElementById("listDevueltas").innerHTML = htmlD || '<p style="font-size:12px; padding:8px;">No hay equipos en bodega.</p>';
-            document.getElementById("listPendientesRev").innerHTML = htmlP || '<p style="font-size:12px; padding:8px;">Ningún equipo pendiente de revisión.</p>';
+            document.getElementById("listEntregadas").innerHTML = htmlE || '<p style="font-size:13px; padding:12px; color:var(--text-muted);">No hay equipos entregados actualmente.</p>';
+            document.getElementById("listDevueltas").innerHTML = htmlD || '<p style="font-size:13px; padding:12px; color:var(--text-muted);">No hay equipos registrados en bodega.</p>';
+            document.getElementById("listPendientesRev").innerHTML = htmlP || '<p style="font-size:13px; padding:12px; color:var(--text-muted);">Ningún equipo pendiente de revisión en este momento.</p>';
         }
     </script>
 </body>
